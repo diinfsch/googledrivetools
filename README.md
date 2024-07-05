@@ -16,6 +16,8 @@ This script uploads an folder to drive.
 
 The script can be used to add properties to an file on the drive. The properties must be in a json with the same name of the file and they are attached to the file as "properties". 
 
+NOTE: Limited to 128 bytes!
+
 ## Drive Cleaner
 
 If used, the script searches for "properties" and if found for "expire". If a file has an expire date, it will be removed from the drive. Otherwise nothing happens.

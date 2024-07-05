@@ -51,13 +51,16 @@ def addProperties(service,source_folder_id,scanfolder):
         file_name= Path(item.name).stem +".json"
 
         if file_name in baseFiles:
-            f = open(file_name)
+            f = open(os.path.join(scanfolder,file_name))
             data = json.load(f)
-            updated_file = service.files().update(
-                fileId=item.id,
-                body=data,
-                fields='properties'
-            ).execute()
+            if len(data) >0:
+                updated_file = service.files().update(
+                    fileId=item.id,
+                    body=data,
+                    fields='properties'
+                ).execute()
+                file = service.files().get(fileId=item.id, fields='id, properties').execute()
+                print(file)
         
         
 
@@ -66,7 +69,7 @@ if __name__ == "__main__":
     print("Start Add Properties")
     parser = argparse.ArgumentParser()
     parser.add_argument("-cF", "--configFolder", help="Config Folder",default="./config")
-    parser.add_argument("-dF", "--descriptorFolder", help="Folder where are the descriptors of a file",default=".")
+    parser.add_argument("-dF", "--descriptorFolder", help="Folder where are the descriptors of a file",default="./desc")
     common.addArgs(parser)
     args = parser.parse_args()
 
