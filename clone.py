@@ -21,7 +21,7 @@ def download_file(service, file_id,file_name, destination_folder,webLink, mimeTy
     while done is False:
         status, done = downloader.next_chunk()
         print(f"Download {file_name} {int(status.progress() * 100)}%.")
-    common.writeIndexEntry(webLink,path,mimeType,file_name,properties)
+    common.writeIndexEntry(webLink,path,mimeType,file_name,properties,file_id,folder_id)
 
 def clone_folder(service, source_folder_id, destination_folder_name,softClone,mime_Type, root):
     if not os.path.exists(destination_folder_name) and (not softClone or root):
@@ -49,7 +49,7 @@ def clone_folder(service, source_folder_id, destination_folder_name,softClone,mi
           if not softClone:
              download_file(service,file_id,file_name,destination_folder_name,webLink, mimeType,properties)
           else:
-            common.writeIndexEntry(webLink,"",mimeType,file_name,properties)
+            common.writeIndexEntry(webLink,"",mimeType,file_name,properties,file_id,source_folder_id)
         else:
             clone_folder(service,file_id,os.path.join(destination_folder_name,file_name),softClone,mime_Type,root)
 

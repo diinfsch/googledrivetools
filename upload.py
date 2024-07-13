@@ -77,7 +77,7 @@ def upload_file(service,file_path, folder_id,media_type):
 
         print(f'File ID: {file.get("id")}')
         print(f'Web Content Link: {file.get("webContentLink")}')
-        common.writeIndexEntry(file.get("webContentLink"),file_path,mime_type,file.get("name"),properties)
+        common.writeIndexEntry(file.get("webContentLink"),file_path,mime_type,file.get("name"),properties,file.get("id"),folder_id)
 
 
 if __name__ == "__main__":
