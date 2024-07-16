@@ -9,7 +9,7 @@ mimeType = 'application/vnd.google-apps.folder'
 
 contentindexObjects =[]
 
-def writeIndexEntry(weblink,path,mimeType,file_name,properties,file_id,folder_id):
+def writeIndexEntry(weblink,path,mimeType,file_name,properties,file_id,folder_id,folders):
     o = {
         "id": file_id,
         "webLink":weblink,
@@ -17,7 +17,8 @@ def writeIndexEntry(weblink,path,mimeType,file_name,properties,file_id,folder_id
         "mimeType":mimeType,
         "fileName":file_name,
         "folder":folder_id,
-        "properties": properties
+        "properties": properties,
+        "folders": folders,
     }      
     contentindexObjects.append(o)
 

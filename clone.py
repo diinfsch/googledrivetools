@@ -9,7 +9,7 @@ import io
 import common
 
 
-def download_file(service, file_id,file_name, destination_folder,webLink, mimeType,properties):
+def download_file(service, file_id,file_name, destination_folder,webLink, mimeType,properties,folders):
     path = os.path.join(destination_folder, file_name)
     if os.path.exists(path):
         return
@@ -21,9 +21,9 @@ def download_file(service, file_id,file_name, destination_folder,webLink, mimeTy
     while done is False:
         status, done = downloader.next_chunk()
         print(f"Download {file_name} {int(status.progress() * 100)}%.")
-    common.writeIndexEntry(webLink,path,mimeType,file_name,properties,file_id,folder_id)
+    common.writeIndexEntry(webLink,path,mimeType,file_name,properties,file_id,folder_id,folders)
 
-def clone_folder(service, source_folder_id, destination_folder_name,softClone,mime_Type, root):
+def clone_folder(service, source_folder_id, destination_folder_name,softClone,mime_Type, root,folders):
     if not os.path.exists(destination_folder_name) and (not softClone or root):
      os.mkdir(destination_folder_name)
     root =False
@@ -47,11 +47,13 @@ def clone_folder(service, source_folder_id, destination_folder_name,softClone,mi
         if  mimeType != common.mimeType:
           webLink = item["webContentLink"]
           if not softClone:
-             download_file(service,file_id,file_name,destination_folder_name,webLink, mimeType,properties)
+             download_file(service,file_id,file_name,destination_folder_name,webLink, mimeType,properties,folders)
           else:
-            common.writeIndexEntry(webLink,"",mimeType,file_name,properties,file_id,source_folder_id)
+            common.writeIndexEntry(webLink,"",mimeType,file_name,properties,file_id,source_folder_id,folders)
         else:
-            clone_folder(service,file_id,os.path.join(destination_folder_name,file_name),softClone,mime_Type,root)
+            newArray = [file_id]
+            clone_folder(service,file_id,os.path.join(destination_folder_name,file_name),softClone,mime_Type,root,folders+newArray)
+  
 
     print(f'Folder cloned successfully to {destination_folder_name}')
 
@@ -74,8 +76,9 @@ if __name__ == "__main__":
             raise "No source folder given"
         else :
             source_folder_id = d["sourceFolder"]
+        folders = [source_folder_id]
         destination_folder_name = args.contentFolder
-        clone_folder(service, source_folder_id, destination_folder_name,args.softClone, args.mimeType,True)
+        clone_folder(service, source_folder_id, destination_folder_name,args.softClone, args.mimeType,True,folders)
 
     common.writeIndex(args.contentFolder)
  

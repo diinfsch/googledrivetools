@@ -25,7 +25,7 @@ def create_folder(service, name, parent_id=None):
     return folder.get('id')
 
 
-def upload_folder(service,source_folder_name, destination_id,parent_id,media_type,root):
+def upload_folder(service,source_folder_name, destination_id,parent_id,media_type,root,folders):
     if not os.path.exists(source_folder_name):
      os.mkdir(source_folder_name)
 
@@ -34,19 +34,20 @@ def upload_folder(service,source_folder_name, destination_id,parent_id,media_typ
         folder_id = parent_id
     else:
        folder_id = create_folder(service, folder_name, destination_id)
-
+   
     root = False
     print("Scan Directory: "+source_folder_name)
     for item in os.listdir(source_folder_name):
         print("Upload: "+item)
+        newArray=[folder_id]
         item_path = os.path.join(source_folder_name, item)
         if os.path.isdir(item_path):
-            upload_folder(service, item_path, folder_id,media_type,root)
+            upload_folder(service, item_path, folder_id,media_type,root,folders+newArray)
         else:
-            upload_file(service, item_path, folder_id,media_type)
+            upload_file(service, item_path, folder_id,media_type,folders+newArray)
      
 
-def upload_file(service,file_path, folder_id,media_type):
+def upload_file(service,file_path, folder_id,media_type,folders):
 
     mime_type = get_mime_type(file_path)
 
@@ -77,7 +78,7 @@ def upload_file(service,file_path, folder_id,media_type):
 
         print(f'File ID: {file.get("id")}')
         print(f'Web Content Link: {file.get("webContentLink")}')
-        common.writeIndexEntry(file.get("webContentLink"),file_path,mime_type,file.get("name"),properties,file.get("id"),folder_id)
+        common.writeIndexEntry(file.get("webContentLink"),file_path,mime_type,file.get("name"),properties,file.get("id"),folder_id,folders)
 
 
 if __name__ == "__main__":
@@ -102,5 +103,5 @@ if __name__ == "__main__":
         source_folder_name = args.uploadFolder
         if args.parentid == None:
             args.parentid = destination_folder_id
-
-        upload_folder(service, source_folder_name, destination_folder_id,args.parentid,args.mediaType,True)
+        folders=[destination_folder_id]
+        upload_folder(service, source_folder_name, destination_folder_id,args.parentid,args.mediaType,True,folders)
