@@ -20,7 +20,6 @@ def download_file(service, file_id,file_name, destination_folder,webLink, mimeTy
     done = False
     while done is False:
         status, done = downloader.next_chunk()
-        print(f"Download {file_name} {int(status.progress() * 100)}%.")
     common.writeIndexEntry(webLink,path,mimeType,file_name,properties,file_id,folder_id,folders)
 
 def clone_folder(service, source_folder_id, destination_folder_name,softClone,mime_Type, root,folders):
