@@ -27,8 +27,7 @@ def clone_folder(service, source_folder_id, destination_folder_name,softClone,mi
      os.mkdir(destination_folder_name)
     root =False
 
-    results = service.files().list(q=f"'{source_folder_id}' in parents",
-                                    fields='files(id, name, mimeType, webContentLink,properties)').execute()
+    results = service.files().list(q=f"'{source_folder_id}' in parents",fields='files(id, name, mimeType, webContentLink,properties)').execute()
     items = results.get('files', [])
 
     for item in items:
