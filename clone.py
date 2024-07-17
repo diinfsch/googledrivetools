@@ -9,7 +9,7 @@ import io
 import common
 
 
-def download_file(service, file_id,file_name, destination_folder,webLink, mimeType,properties,folders):
+def download_file(service, file_id,file_name, destination_folder,webLink, mimeType,properties,folder_id,folders):
     path = os.path.join(destination_folder, file_name)
     if os.path.exists(path):
         return
@@ -45,7 +45,7 @@ def clone_folder(service, source_folder_id, destination_folder_name,softClone,mi
         if  mimeType != common.mimeType:
           webLink = item["webContentLink"]
           if not softClone:
-             download_file(service,file_id,file_name,destination_folder_name,webLink, mimeType,properties,folders)
+             download_file(service,file_id,file_name,destination_folder_name,webLink, mimeType,properties,source_folder_id,folders)
           else:
             common.writeIndexEntry(webLink,"",mimeType,file_name,properties,file_id,source_folder_id,folders)
         else:
