@@ -20,9 +20,10 @@ def download_file(service, file_id,file_name, destination_folder,webLink, mimeTy
     done = False
     while done is False:
         status, done = downloader.next_chunk()
-    common.writeIndexEntry(webLink,path,mimeType,file_name,properties,file_id,folder_id,folders)
+        print(f"Download {file_name} {int(status.progress() * 100)}%.")
+    common.writeIndexEntry(webLink,path,mimeType,file_name,properties,file_id,destination_folder,folders)
 
-def clone_folder(service, source_folder_id, destination_folder_name,softClone,mime_Type, root,folders):
+def clone_folder(service, source_folder_id, destination_folder_name,softClone,mime_Type, root,folders,exclude):
     if not os.path.exists(destination_folder_name) and (not softClone or root):
      os.mkdir(destination_folder_name)
     root =False
@@ -32,6 +33,11 @@ def clone_folder(service, source_folder_id, destination_folder_name,softClone,mi
 
     for item in items:
         file_id = item['id']
+
+        if file_id in exclude:
+           print("Item "+file_id+" skipped")
+           continue
+
         file_name = item['name']
         mimeType= item['mimeType']
         if 'properties' in item:
@@ -50,7 +56,7 @@ def clone_folder(service, source_folder_id, destination_folder_name,softClone,mi
             common.writeIndexEntry(webLink,"",mimeType,file_name,properties,file_id,source_folder_id,folders)
         else:
             newArray = [file_id]
-            clone_folder(service,file_id,os.path.join(destination_folder_name,file_name),softClone,mime_Type,root,folders+newArray)
+            clone_folder(service,file_id,os.path.join(destination_folder_name,file_name),softClone,mime_Type,root,folders+newArray,exclude)
   
 
     print(f'Folder cloned successfully to {destination_folder_name}')
@@ -62,6 +68,9 @@ if __name__ == "__main__":
     parser.add_argument("-sc", "--softClone", help="Just read filenames",default=True,action=argparse.BooleanOptionalAction)
     parser.add_argument("-mT", "--mimeType", help="mimeType which shall be considered",default=None)
     parser.add_argument("-coF", "--contentFolder", help="Content Folder where the index and the content is stored",default="content")
+    parser.add_argument("-eF", "--excludeFolder", help="Folder which are skipped")
+
+
 
     common.addArgs(parser)
     args = parser.parse_args()
@@ -76,7 +85,11 @@ if __name__ == "__main__":
             source_folder_id = d["sourceFolder"]
         folders = [source_folder_id]
         destination_folder_name = args.contentFolder
-        clone_folder(service, source_folder_id, destination_folder_name,args.softClone, args.mimeType,True,folders)
+        exclude = []
+        if args.excludeFolder != None and args.excludeFolder != "":
+              exclude = args.excludeFolder.split(",")
+     
+        clone_folder(service, source_folder_id, destination_folder_name,args.softClone, args.mimeType,True,folders,exclude)
 
     common.writeIndex(args.contentFolder)
  
